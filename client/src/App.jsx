@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import DonorDashboard from './pages/DonorDashboard';
+import Home from './pages/Home';
 // import SchoolDashboard from './pages/SchoolDashboard';
 // import AdminDashboard from './pages/AdminDashboard';
 // import DeliveryPersonDashboard from './pages/DeliveryPersonDashboard';
@@ -24,7 +25,7 @@ import AdminSchools from './components/admin/AdminSchool';
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<div>Home Page</div>} />
+      <Route path="/" element={<Home />} />
       
     
       <Route path="/signin" element={<SignIn />} />
