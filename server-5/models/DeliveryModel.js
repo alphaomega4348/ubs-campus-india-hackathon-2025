@@ -3,12 +3,17 @@ const mongoose = require('mongoose');
 const deliverySchema = new mongoose.Schema({
   donation_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'BookDonations',
+    ref: 'Book',
     required: true
   },
   delivery_person_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'DeliveryPersons',
+    ref: 'DeliveryPartner',
+    required: true
+  },
+  reciever_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'School',
     required: true
   },
   status: {

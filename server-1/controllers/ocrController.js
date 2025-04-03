@@ -101,3 +101,13 @@ export const remainingDetails=async(req,res)=>{
     res.status(500).json({ error: err.message });
   }
 }
+
+export const getAllBooks = async (req, res) => {
+  try {
+    const books = await Book.find();
+    res.status(200).json({ success: true, books });
+  } catch (error) {
+    console.error("❌ Error fetching books:", error);
+    res.status(500).json({ error: "Failed to fetch books" });
+  }
+};
