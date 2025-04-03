@@ -37,7 +37,7 @@ function SchoolDashboard() {
           <a href="#request-book">Request a Book</a>
           <a href="#track-delivery">Track Delivery</a>
           <a href="#cart" className="relative">
-            <FaShoppingCart className="text-2xl text-gray-700" /> {/* Cart Icon */}
+            <FaShoppingCart className="text-2xl text-gray-700" /> 
             {cart.length > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2">
                 {cart.length}
@@ -55,8 +55,7 @@ function SchoolDashboard() {
           <AvailableBooks availableBooks={availableBooks} addToCart={addToCart} />
         </section>
 
-        {/* Cart Section */}
-        <Cart cart={cart} removeFromCart={removeFromCart} />
+        
 
         {/* Request a Book Section */}
         <section id="request-book" className="card">

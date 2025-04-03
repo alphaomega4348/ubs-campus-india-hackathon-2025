@@ -73,7 +73,16 @@ const DonorDashboard = () => {
   const [isExtracting, setIsExtracting] = useState(false);
 
   useEffect(() => {
-    // Simulated API call
+    const fetchDonations = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/get_donations_by_id');
+        setDonations(response.data);
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+      }
+    };
+
+    fetchDonations();
   }, []);
 
   const handleSubmit = (e) => {
@@ -408,7 +417,68 @@ const DonorDashboard = () => {
         </form>
       </section>
 
-      {/* Remaining code like donation table and stats... */}
+      <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-blue-500 inline-block">
+          My Donations
+        </h2>
+        {Array.isArray(donations) && donations.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Book Title</th>
+                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Quantity</th>
+                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Condition</th>
+                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Grade Level</th>
+                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Category</th>
+                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Date</th>
+                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {donations.map(donation => (
+                  <tr key={donation.donation_id} className="hover:bg-gray-50">
+                    <td className="p-3 border-b border-gray-200 font-medium text-gray-800">{donation.title}</td>
+                    <td className="p-3 border-b border-gray-200">{donation.quantity}</td>
+                    <td className="p-3 border-b border-gray-200">{donation.condition}</td>
+                    <td className="p-3 border-b border-gray-200">{donation.gradeLevel}</td>
+                    <td className="p-3 border-b border-gray-200">{donation.category}</td>
+                    <td className="p-3 border-b border-gray-200">{donation.date}</td>
+                    <td className="p-3 border-b border-gray-200">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusClass(donation.status)}`}>
+                        {donation.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center p-8 bg-gray-50 rounded-md text-gray-500">
+            <p>No donations found. Start donating books today!</p>
+          </div>
+        )}
+      </section>
+      
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="bg-white rounded-lg shadow-md p-5 text-center">
+          <h3 className="text-gray-500 text-base mb-2">Total Donations</h3>
+          <div className="text-4xl font-bold text-blue-500">{donations.length}</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-5 text-center">
+          <h3 className="text-gray-500 text-base mb-2">Books Donated</h3>
+          <div className="text-4xl font-bold text-blue-500">{donations.reduce((total, donation) => total + donation.quantity, 0)}</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-5 text-center">
+          <h3 className="text-gray-500 text-base mb-2">Pending</h3>
+          <div className="text-4xl font-bold text-blue-500">{donations.filter(d => d.status === 'pending').length}</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-5 text-center">
+          <h3 className="text-gray-500 text-base mb-2">Delivered</h3>
+          <div className="text-4xl font-bold text-blue-500">{donations.filter(d => d.status === 'delivered').length}</div>
+        </div>
+      </section>
     </div>
   );
 };

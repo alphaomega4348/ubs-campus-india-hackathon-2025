@@ -24,6 +24,7 @@ import About from './pages/About';
 import SchoolDashboard from './pages/SchoolDashboard';
 import AdminSchools from './components/admin/AdminSchool';
 import ContactUs from './pages/ContactUs';
+import MapComponent from './pages/MapComponent';
 
 function App() {
   return (

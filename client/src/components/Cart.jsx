@@ -64,6 +64,25 @@ function Cart({ cart, removeFromCart }) {
               </div>
             </div>
           ))}
+          <div className="mt-4">
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition w-full"
+              onClick={() => {
+                const orderPlaced = document.getElementById('order-placed');
+                orderPlaced.style.display = 'block';
+                setTimeout(() => (orderPlaced.style.display = 'none'), 2000);
+              }}
+            >
+              Place Order
+            </button>
+            <div
+              id="order-placed"
+              className="bg-green-100 border border-green-500 rounded p-4 mt-4 text-green-800 hidden"
+            >
+              <FaCheckCircle className="text-4xl" />
+              <span className="ml-4">Order Placed!</span>
+            </div>
+          </div>
         </div>
       )}
     </section>
