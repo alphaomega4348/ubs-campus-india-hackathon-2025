@@ -1,10 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const donarRoute = require("./routes/donarroute");
+const schoolRoute=require("./routes/schoolroute")
 const { config } = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const donarRoute = require("./routes/donarroute");
+
 
 const app = express();
 
@@ -37,6 +39,8 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
+app.use("/api/donar", donarRoute); // ✅ Ensure This Matches Postman Request
+app.use('/api/school',schoolRoute)
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('❌ Server Error:', err);
