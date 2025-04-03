@@ -1,5 +1,5 @@
-const { createWorker } =require( 'tesseract.js');
- const extractTextFromImage = async (imageUrl) => {
+import { createWorker } from 'tesseract.js';
+export const extractTextFromImage = async (imageUrl) => {
   try {
     console.log("📷 Image URL:", imageUrl);
     const worker = await createWorker('eng');
@@ -12,4 +12,4 @@ const { createWorker } =require( 'tesseract.js');
   }
 };
 
-module.exports=extractTextFromImage
+

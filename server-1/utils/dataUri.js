@@ -1,7 +1,5 @@
-const DataUriParser=require('datauri/parser')
-
-
-const path=require('path')
+import DataUriParser from 'datauri/parser';
+import path from 'path';
 
 const getDataUri=(file)=>{
     const parser=new DataUriParser()
@@ -12,4 +10,4 @@ const getDataUri=(file)=>{
 }
 
 
-module.exports=getDataUri
+export default getDataUr;
