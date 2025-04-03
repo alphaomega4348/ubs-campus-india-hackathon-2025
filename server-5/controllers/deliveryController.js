@@ -67,13 +67,11 @@ const complete_transaction = async (req, res) => {
             return res.status(400).json({ message: "Proof of delivery is required" });
         }
 
-        // Optimize image before uploading
         const optimizedImageBuffer = await sharp(req.file.buffer)
             .resize({ width: 800, height: 800, fit: "inside" })
             .toFormat("jpeg", { quality: 80 })
             .toBuffer();
 
-        // Convert image buffer to Base64 URI
         const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString("base64")}`;
 
         // Upload to Cloudinary
@@ -92,5 +90,65 @@ const complete_transaction = async (req, res) => {
     }
 };
 
+const get_all_transactions = async (req, res) => {
+    try {
+        const transactions = await Delivery.find(); // Fetch all transactions
 
-module.exports = { start_transaction, complete_transaction };
+        if (transactions.length === 0) {
+            return res.status(404).json({ message: "No transactions found" });
+        }
+
+        return res.status(200).json({ transactions });
+
+    } catch (error) {
+        console.error("Error in get_all_transactions:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+const get_transactions_by_delivery_person = async (req, res) => {
+    try {
+        const { delivery_person_id } = req.params;
+
+        if (!delivery_person_id) {
+            return res.status(400).json({ message: "delivery_person_id is required" });
+        }
+
+        const transactions = await Delivery.find({ delivery_person_id });
+
+        if (transactions.length === 0) {
+            return res.status(404).json({ message: "No transactions found for this delivery person" });
+        }
+
+        return res.status(200).json({ transactions });
+
+    } catch (error) {
+        console.error("Error in get_transactions_by_delivery_person:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+const get_transactions_by_donor = async (req, res) => {
+    try {
+        const { donation_id } = req.params;
+
+        if (!donation_id) {
+            return res.status(400).json({ message: "donor_id is required" });
+        }
+
+        const transactions = await Delivery.find({ donation_id });
+
+        if (transactions.length === 0) {
+            return res.status(404).json({ message: "No transactions found for this donor" });
+        }
+
+        return res.status(200).json({ transactions });
+
+    } catch (error) {
+        console.error("Error in get_transactions_by_donor:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+module.exports = { start_transaction, complete_transaction, get_all_transactions,get_transactions_by_delivery_person ,
+    get_transactions_by_donor};
