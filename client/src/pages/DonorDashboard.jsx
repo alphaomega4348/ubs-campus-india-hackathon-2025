@@ -68,6 +68,7 @@ const DonorDashboard = () => {
   useEffect(() => {
     // Commented out the actual API call to use our dummy data
     // axios.get('/donors/{donor_id}/donations')
+    
     //   .then(res => {
     //     const donationsData = Array.isArray(res.data) ? res.data : [];
     //     setDonations(donationsData);
@@ -130,9 +131,13 @@ const DonorDashboard = () => {
     }
   };
 
+  const handleImageUpload = (file) => {
+    setNewDonation({ ...newDonation, image: file });
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-5 font-sans text-gray-800">
-      <header className="text-center mb-8 pb-5 border-b border-gray-200">
+      <header className="text-center mb-8 pb-5">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Donor Dashboard</h1>
         <p className="text-lg text-gray-500">Thank you for your generosity! Your donations make a difference.</p>
       </header>
@@ -237,9 +242,71 @@ const DonorDashboard = () => {
             </div>
           </div>
           
+          
+
+          {/* OR Separator */}
+          <div className="relative flex items-center py-5">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="flex-shrink mx-4 text-gray-500 font-medium">OR</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+
+          {/* Image Upload UI */}
+          <div className="mt-2 mb-6">
+            <label className="font-semibold text-sm text-gray-700 mb-2 block">
+              Upload Book Images
+            </label>
+            <div 
+              className={`border-2 border-dashed rounded-lg p-6 ${
+                newDonation.image ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-400'
+              } transition-colors duration-200 text-center cursor-pointer`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  const file = e.dataTransfer.files[0];
+                  handleImageUpload(file);
+                }
+              }}
+              onClick={() => document.getElementById('image-upload').click()}
+            >
+              {newDonation.image ? (
+                <div className="flex flex-col items-center">
+                  <img 
+                    src={typeof newDonation.image === 'string' ? newDonation.image : URL.createObjectURL(newDonation.image)} 
+                    alt="Book preview" 
+                    className="max-h-40 mb-4 rounded"
+                  />
+                  <p className="text-sm text-gray-600">Click or drag to change image</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <svg className="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <p className="text-sm text-gray-600">Click or drag to upload image</p>
+                </div>
+              )}
+            </div>
+            <input 
+              type="file" 
+              id="image-upload" 
+              style={{ display: 'none' }} 
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  handleImageUpload(e.target.files[0]);
+                }
+              }}
+            />
+          </div>
           <button 
             type="submit" 
-            className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-5 rounded-md font-semibold text-base transition-colors duration-200 self-start mt-3"
+            className="text-white rounded-md font-semibold text-base transition-colors duration-200 self-start"
           >
             Donate Books
           </button>
