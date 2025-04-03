@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react'
 import { FaLocationArrow, FaTimes } from 'react-icons/fa'
 import { useJsApiLoader, GoogleMap, Marker, Autocomplete, DirectionsRenderer } from '@react-google-maps/api'
 
-const center = { lat: 48.8584, lng: 2.2945 }
+const center = { lat:18.552848668067604, lng: 73.9539305606305  }
 
 const MapComponent = () => {
     const { isLoaded } = useJsApiLoader({
