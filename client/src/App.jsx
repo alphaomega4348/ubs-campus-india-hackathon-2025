@@ -4,8 +4,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import DonorDashboard from './pages/DonorDashboard';
 import Home from './pages/Home';
-// import SchoolDashboard from './pages/SchoolDashboard';
-// import AdminDashboard from './pages/AdminDashboard';
+import MapComponent from './pages/MapComponent';
 // import DeliveryPersonDashboard from './pages/DeliveryPersonDashboard';
 // import BookDonationForm from './components/BookDonationForm';
 // import BookRequestForm from './components/BookRequestForm';
@@ -13,12 +12,12 @@ import Home from './pages/Home';
 // import ProtectedRoute from './components/ProtectedRoute';
 // import DonorDashboard from './pages/DonorDashboard';
 
-// import AdminDashboard from './pages/AdminDashboard';
 // import DeliveryPersonDashboard from './pages/DeliveryPersonDashboard';
 // import BookDonationForm from './components/BookDonationForm';
 // import BookRequestForm from './components/BookRequestForm';
 // import DeliveryStatus from './components/DeliveryStatus';
 // import ProtectedRoute from './components/ProtectedRoute';
+
 import SchoolDashboard from './pages/SchoolDashboard';
 import AdminSchools from './components/admin/AdminSchool';
 
@@ -32,6 +31,7 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       {/* <Route path="/donor" element={<SignUp />} /> */}
       <Route path="/school/dashboard" element={<SchoolDashboard/>} />
+      <Route path="/maps" element={<MapComponent/>} />
 
       {/* Protected Routes */}
       {/* <Route path="/donor/dashboard" element={<ProtectedRoute role="donor" component={DonorDashboard} />} /> */}
