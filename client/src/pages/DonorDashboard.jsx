@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const DonorDashboard = () => {
   const [donations, setDonations] = useState([
@@ -56,6 +57,7 @@ const DonorDashboard = () => {
   
   const [newDonation, setNewDonation] = useState({
     title: '',
+    author: '',
     condition: '',
     quantity: 1,
     gradeLevel: '',
@@ -64,6 +66,8 @@ const DonorDashboard = () => {
     location: '',
     image: '',
   });
+  
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
 
   useEffect(() => {
     // Commented out the actual API call to use our dummy data
@@ -97,6 +101,7 @@ const DonorDashboard = () => {
     // Reset form
     setNewDonation({
       title: '',
+      author: '',
       condition: '',
       quantity: 1,
       gradeLevel: '',
@@ -131,8 +136,55 @@ const DonorDashboard = () => {
     }
   };
 
-  const handleImageUpload = (file) => {
+  const handleImageUpload = async (file) => {
     setNewDonation({ ...newDonation, image: file });
+    setIsProcessingImage(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      console.log(newDonation)
+      
+      
+      const extractionResponse = await axios.post('http://localhost:8000/api/ocr/process', {
+        image:newDonation.image,
+        condition:"Good",
+        donor_id:"donor_id",
+        gradeLevel:"gradeLevel",
+        language:"English",
+        quantity:10,
+      });
+      
+      const raw = extractionResponse.data.bookData;
+      console.log("📦 OCR Response (raw):", raw);
+      
+      let bookData = null;
+      
+      if (raw && typeof raw === 'string') {
+        const cleaned = raw
+          .replace(/```json|```/gi, '')
+          .replace(/^json\s*/i, '')
+          .trim();
+        
+        try {
+          bookData = JSON.parse(cleaned);
+        } catch (err) {
+          console.error("❌ JSON parse error:", err);
+        }
+      }
+      
+      if (bookData) {
+        setNewDonation(prev => ({
+          ...prev,
+          title: bookData.title || prev.title,
+          author: bookData.author || prev.author,
+        }));
+      }
+    } catch (error) {
+      console.error("Error processing image:", error);
+    } finally {
+      setIsProcessingImage(false);
+    }
   };
 
   return (
@@ -147,19 +199,37 @@ const DonorDashboard = () => {
           Donate Books
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col mb-4">
-            <label htmlFor="title" className="font-semibold text-sm text-gray-700 mb-1">
-              Book Title
-            </label>
-            <input 
-              type="text" 
-              id="title"
-              placeholder="Title" 
-              value={newDonation.title}
-              onChange={(e) => setNewDonation({ ...newDonation, title: e.target.value })} 
-              required
-              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-            />
+          
+          <div className="flex flex-col md:flex-row gap-5 mb-4">
+            <div className="flex flex-col flex-1">
+              <label htmlFor="title" className="font-semibold text-sm text-gray-700 mb-1">
+                Book Title
+              </label>
+              <input 
+                type="text" 
+                id="title"
+                placeholder="Title" 
+                value={newDonation.title}
+                onChange={(e) => setNewDonation({ ...newDonation, title: e.target.value })} 
+                required
+                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              />
+            </div>
+            
+            <div className="flex flex-col flex-1">
+              <label htmlFor="author" className="font-semibold text-sm text-gray-700 mb-1">
+                Author
+              </label>
+              <input 
+                type="text" 
+                id="author"
+                placeholder="Author" 
+                value={newDonation.author}
+                onChange={(e) => setNewDonation({ ...newDonation, author: e.target.value })} 
+                required
+                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              />
+            </div>
           </div>
           
           <div className="flex flex-col md:flex-row gap-5 mb-4">
@@ -242,19 +312,15 @@ const DonorDashboard = () => {
             </div>
           </div>
           
-          
-
-          {/* OR Separator */}
           <div className="relative flex items-center py-5">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="flex-shrink mx-4 text-gray-500 font-medium">OR</span>
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
 
-          {/* Image Upload UI */}
           <div className="mt-2 mb-6">
             <label className="font-semibold text-sm text-gray-700 mb-2 block">
-              Upload Book Images
+              Upload Book Cover Image
             </label>
             <div 
               className={`border-2 border-dashed rounded-lg p-6 ${
@@ -275,7 +341,12 @@ const DonorDashboard = () => {
               }}
               onClick={() => document.getElementById('image-upload').click()}
             >
-              {newDonation.image ? (
+              {isProcessingImage ? (
+                <div className="flex flex-col items-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-3"></div>
+                  <p className="text-blue-600 font-medium">Extracting book information...</p>
+                </div>
+              ) : newDonation.image ? (
                 <div className="flex flex-col items-center">
                   <img 
                     src={typeof newDonation.image === 'string' ? newDonation.image : URL.createObjectURL(newDonation.image)} 
@@ -283,19 +354,25 @@ const DonorDashboard = () => {
                     className="max-h-40 mb-4 rounded"
                   />
                   <p className="text-sm text-gray-600">Click or drag to change image</p>
+                  <p className="text-xs text-green-600 mt-2">
+                    Book information extracted successfully!
+                  </p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
                   <svg className="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                   </svg>
-                  <p className="text-sm text-gray-600">Click or drag to upload image</p>
+                  <p className="font-medium text-gray-700 mb-1">Drag & drop the book cover image here</p>
+                  <p className="text-sm text-gray-500">or click to select a file</p>
+                  <p className="text-xs text-gray-400 mt-2">We'll automatically extract the book information for you!</p>
                 </div>
               )}
             </div>
             <input 
               type="file" 
               id="image-upload" 
+              accept="image/*"
               style={{ display: 'none' }} 
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
@@ -306,7 +383,7 @@ const DonorDashboard = () => {
           </div>
           <button 
             type="submit" 
-            className="text-white rounded-md font-semibold text-base transition-colors duration-200 self-start"
+            className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-5 rounded-md font-semibold text-base transition-colors duration-200 self-start"
           >
             Donate Books
           </button>
