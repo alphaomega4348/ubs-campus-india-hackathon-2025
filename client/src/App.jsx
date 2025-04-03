@@ -4,7 +4,9 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import DonorDashboard from './pages/DonorDashboard';
 import Home from './pages/Home';
-import MapComponent from './pages/MapComponent';
+import About from './pages/About';
+// import SchoolDashboard from './pages/SchoolDashboard';
+// import AdminDashboard from './pages/AdminDashboard';
 // import DeliveryPersonDashboard from './pages/DeliveryPersonDashboard';
 // import BookDonationForm from './components/BookDonationForm';
 // import BookRequestForm from './components/BookRequestForm';
@@ -12,6 +14,7 @@ import MapComponent from './pages/MapComponent';
 // import ProtectedRoute from './components/ProtectedRoute';
 // import DonorDashboard from './pages/DonorDashboard';
 
+// import AdminDashboard from './pages/AdminDashboard';
 // import DeliveryPersonDashboard from './pages/DeliveryPersonDashboard';
 // import BookDonationForm from './components/BookDonationForm';
 // import BookRequestForm from './components/BookRequestForm';
@@ -20,12 +23,14 @@ import MapComponent from './pages/MapComponent';
 
 import SchoolDashboard from './pages/SchoolDashboard';
 import AdminSchools from './components/admin/AdminSchool';
+import ContactUs from './pages/ContactUs';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      
+      <Route path="/about" element={<About/>} />
+      <Route path="/contact" element={<ContactUs />} />
     
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />

@@ -4,8 +4,8 @@ function RequestBook({ requestedBooks, setRequestedBooks }) {
   const [newRequest, setNewRequest] = useState({
     bookName: '',
     author: '',
-    edition: '',
-    image: null,
+    quantity: '',
+    area: 'Rural',
   });
 
   const handleInputChange = (e) => {
@@ -13,20 +13,19 @@ function RequestBook({ requestedBooks, setRequestedBooks }) {
     setNewRequest({ ...newRequest, [name]: value });
   };
 
-  const handleImageUpload = (e) => {
-    setNewRequest({ ...newRequest, image: e.target.files[0] });
-  };
-
   const handleRequestBook = () => {
-    if (newRequest.bookName.trim() !== '' && newRequest.author.trim() !== '' && newRequest.edition.trim() !== '') {
+    if (
+      newRequest.bookName.trim() !== '' &&
+      newRequest.author.trim() !== '' &&
+      newRequest.quantity.trim() !== ''
+    ) {
       setRequestedBooks([...requestedBooks, newRequest]);
-      setNewRequest({ bookName: '', author: '', edition: '', image: null });
+      setNewRequest({ bookName: '', author: '', quantity: '', area: 'Rural' });
     }
   };
 
   return (
     <section className="p-6 bg-white shadow-md rounded-lg border border-gray-200">
-      {/* <h2 className="text-2xl font-bold text-center mb-6">Request a Book</h2> */}
       <div className="space-y-4">
         {/* Book Name Input */}
         <div>
@@ -54,36 +53,41 @@ function RequestBook({ requestedBooks, setRequestedBooks }) {
           />
         </div>
 
-        {/* Edition Input */}
+        {/* Quantity Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Edition</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Quantity Required</label>
           <input
-            type="text"
-            name="edition"
-            value={newRequest.edition}
+            type="number"
+            name="quantity"
+            value={newRequest.quantity}
             onChange={handleInputChange}
-            placeholder="Enter edition"
+            placeholder="Enter quantity required"
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Image Upload */}
+        {/* Area Dropdown */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Upload Book Image</label>
-          <input
-            type="file"
-            onChange={handleImageUpload}
+          <label className="block text-sm font-medium text-gray-700 mb-1">Area</label>
+          <select
+            name="area"
+            value={newRequest.area}
+            onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          >
+            <option value="Rural">Rural</option>
+            <option value="Urban">Urban</option>
+            <option value="Metropolitan">Metropolitan</option>
+          </select>
         </div>
 
         {/* Submit Button */}
         <button
-      onClick={handleRequestBook}
-      className="w-full bg-orange-400 text-white py-2 px-4 rounded-md hover:bg-amber-300 transition"
-    >
-  Request Book
-</button>
+          onClick={handleRequestBook}
+          className="w-full bg-orange-400 text-white py-2 px-4 rounded-md hover:bg-amber-300 transition"
+        >
+          Request Book
+        </button>
       </div>
 
       {/* Requested Books List */}
@@ -96,14 +100,8 @@ function RequestBook({ requestedBooks, setRequestedBooks }) {
           >
             <p><strong>Book Name:</strong> {book.bookName}</p>
             <p><strong>Author:</strong> {book.author}</p>
-            <p><strong>Edition:</strong> {book.edition}</p>
-            {book.image && (
-              <img
-                src={URL.createObjectURL(book.image)}
-                alt={book.bookName}
-                className="mt-2 w-20 h-20 object-cover rounded-md"
-              />
-            )}
+            <p><strong>Quantity:</strong> {book.quantity}</p>
+            <p><strong>Area:</strong> {book.area}</p>
           </li>
         ))}
       </ul>
