@@ -5,8 +5,9 @@ const dotenvcong=require('dotenv')
 dotenvcong.config()
 const signup_partner = async (req, res) => {
     try {
-        const { name, email, password, confirmPassword, location, mobile, availability, type } = req.body;
+        const { name, email, password, confirmPassword, location, phone, availability, type } = req.body;
 
+        const mobile=phone
         if (!name || !email || !password || !confirmPassword || !location || !mobile || !type) {
             return res.status(400).json({ message: "All fields are required." });
         }

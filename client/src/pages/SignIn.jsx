@@ -5,7 +5,8 @@ function AuthPage({ isSignUp }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "", // New role field
+    role: "",
+    location: "", // Location field added
     ...(isSignUp && { name: "" }),
   });
   const [error, setError] = useState("");
@@ -28,6 +29,11 @@ function AuthPage({ isSignUp }) {
       return;
     }
 
+    if (formData.role === "logistics" && !formData.location) {
+      setError("Please enter a location for logistics.");
+      return;
+    }
+
     setLoading(true);
 
     let apiUrl;
@@ -35,6 +41,9 @@ function AuthPage({ isSignUp }) {
       apiUrl = "http://localhost:5001/api/donar/donors/login";
     } else if (formData.role === "school") {
       apiUrl = "http://localhost:5001/api/school/schools/login";
+    }
+    else if(formData.role === "logistics"){
+      apiUrl = "http://localhost:5002/api/patner/login"
     }
 
     if (!isSignUp) {
@@ -56,7 +65,6 @@ function AuthPage({ isSignUp }) {
           localStorage.setItem(`${formData.role}Token`, data.token);
           console.log("Login successful:", data);
 
-          // Redirect based on role
           navigate(formData.role === "donor" ? "/donor/dashboard" : "/school/dashboard");
         } else {
           setError(data.message || "Login failed. Please check your credentials.");
@@ -66,7 +74,6 @@ function AuthPage({ isSignUp }) {
         console.error("Login error:", err);
       }
     } else {
-      // Placeholder for signup API call
       console.log("Sign up data:", formData);
     }
 
@@ -122,8 +129,25 @@ function AuthPage({ isSignUp }) {
               <option value="">Select a role</option>
               <option value="donor">Donor</option>
               <option value="school">School</option>
+              <option value="logistics">Logistics</option>
             </select>
           </div>
+
+          {/* Location Field (Only for Logistics) */}
+          {formData.role === "logistics" && (
+            <div>
+              <label className="block text-gray-600">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
+                style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-gray-600">Email</label>

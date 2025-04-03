@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 function SignUp() {
   const navigate = useNavigate();
@@ -12,11 +11,13 @@ function SignUp() {
     role: '',
     address: '',
     phoneNumber: '',
-    // School-specific fields
     area: '',
     totalStudents: '',
     totalBooks: '',
+    type: '', // Added type for logistics
+    location: '' // Added location for logistics
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -30,10 +31,8 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Reset error state
     setError('');
     
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords don't match");
       return;
@@ -42,32 +41,29 @@ function SignUp() {
     try {
       setLoading(true);
       
-      // Prepare common data for API call
       const userData = {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        confirmPassword:formData.confirmPassword,
         address: formData.address,
         phone: formData.phoneNumber,
       };
       
       let apiEndpoint;
       
-      // Determine API endpoint and data based on role
       if (formData.role === 'donor') {
-        // Add donor-specific fields
         userData.donorType = 'individual';
         apiEndpoint = 'http://localhost:5001/api/donar/donors/register';
       } else if (formData.role === 'school') {
-        // Add school-specific fields
         userData.area = formData.area;
         userData.totalStudents = formData.totalStudents;
-        userData.password=formData.password
-        userData.confirmPassword=formData.confirmPassword
         apiEndpoint = 'http://localhost:5001/api/school/schools/register';
       } else if (formData.role === 'logistics') {
-        apiEndpoint = 'http://localhost:5001/api/logistics/register';
+        userData.type = formData.type;
+        userData.location = formData.location;
+        userData.confirmPassword=formData.confirmPassword
+        userData.password=formData.password // Include location field
+        apiEndpoint = 'http://localhost:5002/api/patner/add-patner';
       } else {
         setError('Please select a valid role');
         setLoading(false);
@@ -76,7 +72,6 @@ function SignUp() {
       
       console.log(`Sending ${formData.role} registration data to ${apiEndpoint}:`, userData);
       
-      // Make API call to the appropriate registration endpoint
       const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
@@ -91,27 +86,16 @@ function SignUp() {
         throw new Error(responseData.message || 'Registration failed');
       }
       
-      console.log('Registration successful:', responseData);
-      
-      // Redirect to sign in page after successful registration
       alert('Registration successful! Please sign in.');
       navigate('/signin');
       
     } catch (err) {
-      console.error('Registration error:', err);
-      
-      // Display error message
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError(err.message || 'An error occurred during registration. Please try again.');
-      }
+      setError(err.message || 'An error occurred during registration. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Render school-specific fields when role is 'school'
   const renderRoleSpecificFields = () => {
     if (formData.role === 'school') {
       return (
@@ -123,8 +107,7 @@ function SignUp() {
               value={formData.area}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-              style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+              className="w-full px-4 py-2 mt-1 border rounded-lg"
             >
               <option value="">Select Area Type</option>
               <option value="Urban">Urban</option>
@@ -140,8 +123,7 @@ function SignUp() {
               value={formData.totalStudents}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-              style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+              className="w-full px-4 py-2 mt-1 border rounded-lg"
             />
           </div>
           <div>
@@ -152,25 +134,52 @@ function SignUp() {
               value={formData.totalBooks}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-              style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+              className="w-full px-4 py-2 mt-1 border rounded-lg"
             />
           </div>
         </div>
       );
     }
+
+    if (formData.role === 'logistics') {
+      return (
+        <div className="space-y-4 mt-4">
+          <div>
+            <label className="block text-gray-600">Type</label>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 mt-1 border rounded-lg"
+            >
+              <option value="">Select Type</option>
+              <option value="NGO">NGO</option>
+              <option value="Local Volunteer">Local Volunteer</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-600">Location</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 mt-1 border rounded-lg"
+            />
+          </div>
+        </div>
+      );
+    }
+
     return null;
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center"
-    style={{
-      backgroundImage: `linear-gradient(rgba(255, 250, 240, 0.9), rgba(255, 250, 240, 0.8)), url('https://www.hamraahfoundation.org/data/2018/05/book-distribution-4-1024x682.jpg')`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-4xl p-8 space-y-6 bg-white shadow-lg rounded-lg my-8 mx-4">
-        <h2 className="text-2xl font-bold text-center" style={{ color: "#ff7f00" }}>
+        <h2 className="text-2xl font-bold text-center text-orange-600">
           Sign Up as {formData.role ? formData.role.charAt(0).toUpperCase() + formData.role.slice(1) : ''}
         </h2>
         
@@ -182,7 +191,6 @@ function SignUp() {
         
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Left Column */}
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-600">Name</label>
@@ -192,8 +200,7 @@ function SignUp() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-                  style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+                  className="w-full px-4 py-2 mt-1 border rounded-lg"
                 />
               </div>
               <div>
@@ -204,8 +211,7 @@ function SignUp() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-                  style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+                  className="w-full px-4 py-2 mt-1 border rounded-lg"
                 />
               </div>
               <div>
@@ -216,8 +222,7 @@ function SignUp() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-                  style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+                  className="w-full px-4 py-2 mt-1 border rounded-lg"
                 />
               </div>
               <div>
@@ -228,13 +233,11 @@ function SignUp() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-                  style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+                  className="w-full px-4 py-2 mt-1 border rounded-lg"
                 />
               </div>
             </div>
 
-            {/* Right Column */}
             <div className="space-y-4 mt-2">
               <div>
                 <label className="block text-gray-600">Role</label>
@@ -243,8 +246,7 @@ function SignUp() {
                   value={formData.role}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border rounded-lg focus:ring focus:ring-orange-300"
-                  style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+                  className="w-full px-4 py-3 border rounded-lg"
                 >
                   <option value="">Select a role</option>
                   <option value="donor">Donor</option>
@@ -260,53 +262,21 @@ function SignUp() {
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-orange-300"
-                  style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
-                />
-              </div>
-              <div>
-                <label className="block text-gray-600">Address</label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
-                  style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
-                  rows="5"
+                  className="w-full px-4 py-2 border rounded-lg"
                 />
               </div>
             </div>
           </div>
-          
-          {/* Render role-specific fields */}
+
           {renderRoleSpecificFields()}
 
-          <div className="pt-4">
-            <button
-              type="submit"
-              className="w-full py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "#ff7f00" }}
-              disabled={loading}
-            >
-              {loading ? 'Signing Up...' : 'Sign Up'}
-            </button>
-          </div>
+          <button type="submit" className="w-full py-3 text-white bg-orange-600 rounded-lg" disabled={loading}>
+            {loading ? 'Signing Up...' : 'Sign Up'}
+          </button>
         </form>
-        <p className="text-center text-gray-600 mt-6">
-          Already have an account? {" "}
-          <Link
-            to="/signin"
-            className="hover:underline"
-            style={{ color: "#ff7f00" }}
-          >
-            Sign In
-          </Link>
-        </p>
       </div>
     </div>
   );
 }
 
 export default SignUp;
-
