@@ -71,23 +71,6 @@ const DonorDashboard = () => {
   const [ocrResult, setOcrResult] = useState(null);
   const [isExtracting, setIsExtracting] = useState(false);
 
-<<<<<<< Updated upstream
-  useEffect(() => {
-    const fetchDonations = async () => {
-      try {
-        const response = await fetch('http://localhost:5001/api/donar/donors/get-all');
-        // const responseData = await response.json();
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error fetching donations:', error);
-      }
-    };
-
-    fetchDonations();
-  }, []);
-
-=======
->>>>>>> Stashed changes
   const handleSubmit = (e) => {
     e.preventDefault();
 
