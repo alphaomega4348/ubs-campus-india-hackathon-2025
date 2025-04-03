@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function AuthPage({ isSignUp }) {
   const [formData, setFormData] = useState({
@@ -7,6 +7,9 @@ function AuthPage({ isSignUp }) {
     password: "",
     ...(isSignUp && { name: "" }),
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -15,10 +18,46 @@ function AuthPage({ isSignUp }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(isSignUp ? "Sign up data:" : "Sign in data:", formData);
-    // Add your authentication logic here
+    setError("");
+    setLoading(true);
+    
+    if (!isSignUp) {
+      try {
+        const response = await fetch('http://localhost:5001/api/donar/donors/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Store token or user data in localStorage if needed
+          localStorage.setItem('donorToken', data.token);
+          console.log("Login successful:", data);
+          
+          // Redirect to donor dashboard
+          navigate("/donor/dashboard");
+        } else {
+          setError(data.message || "Login failed. Please check your credentials.");
+        }
+      } catch (err) {
+        setError("An error occurred. Please try again later.");
+        console.error("Login error:", err);
+      }
+    } else {
+      // For signup flow - just logging for now
+      console.log("Sign up data:", formData);
+    }
+    
+    setLoading(false);
   };
 
   return (
@@ -32,6 +71,9 @@ function AuthPage({ isSignUp }) {
         <h2 className="text-2xl font-bold text-center" style={{ color: "#ff7f00" }}>
           {isSignUp ? "Sign Up" : "Sign In"}
         </h2>
+        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>}
         <form className="space-y-4" onSubmit={handleSubmit}>
           {isSignUp && (
             <div>
@@ -75,8 +117,9 @@ function AuthPage({ isSignUp }) {
             type="submit"
             className="w-full py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
             style={{ backgroundColor: "#ff7f00" }}
+            disabled={loading}
           >
-            {isSignUp ? "Sign Up" : "Sign In"}
+            {loading ? "Processing..." : (isSignUp ? "Sign Up" : "Sign In")}
           </button>
         </form>
         <p className="text-center text-gray-600">

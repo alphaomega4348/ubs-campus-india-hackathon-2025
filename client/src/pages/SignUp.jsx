@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function SignUp() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +13,8 @@ function SignUp() {
     address: '',
     phoneNumber: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -19,14 +23,67 @@ function SignUp() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Reset error state
+    setError('');
+    
+    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match");
+      setError("Passwords don't match");
       return;
     }
-    console.log('Sign up data:', formData);
-    // Add your registration logic here
+    
+    try {
+      setLoading(true);
+      
+      // Prepare data for API call
+      const userData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        role: formData.role,
+        address: formData.address,
+        phone: formData.phoneNumber,
+        donorType: 'individual',
+      };
+      
+      // Make API call to register endpoint
+      console.log('Sending registration data:', userData);
+      const response = await fetch('http://localhost:5001/api/donar/donors/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
+
+      const responseData = await response.json();
+      
+      console.log('Registration successful:', response.data);
+      
+      // Redirect to sign in page after successful registration
+      alert('Registration successful! Please sign in.');
+      navigate('/signin');
+      
+    } catch (err) {
+      console.error('Registration error:', err);
+      
+      // Display error message
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('An error occurred during registration. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,6 +97,13 @@ function SignUp() {
         <h2 className="text-2xl font-bold text-center" style={{ color: "#ff7f00" }}>
           Sign Up
         </h2>
+        
+        {error && (
+          <div className="p-3 bg-red-100 text-red-700 rounded-lg text-center">
+            {error}
+          </div>
+        )}
+        
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Left Column */}
@@ -144,8 +208,9 @@ function SignUp() {
               type="submit"
               className="w-full py-3 text-white rounded-lg hover:opacity-90 transition-opacity"
               style={{ backgroundColor: "#ff7f00" }}
+              disabled={loading}
             >
-              Sign Up
+              {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
           </div>
         </form>

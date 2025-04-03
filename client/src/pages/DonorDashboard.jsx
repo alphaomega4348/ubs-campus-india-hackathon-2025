@@ -75,8 +75,9 @@ const DonorDashboard = () => {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/get_donations_by_id');
-        setDonations(response.data);
+        const response = await fetch('http://localhost:5001/api/donar/donors/get-all');
+        // const responseData = await response.json();
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching donations:', error);
       }
