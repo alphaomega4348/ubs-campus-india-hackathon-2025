@@ -1,15 +1,15 @@
 const express = require('express');
-const { registerSchool, getSchools } = require('../controllers/schoolController');
-const { registerDonor, getDonors } = require('../controllers/donorController');
+// const { registerSchool, getSchools } = require('../controllers/schoolController');
+const { registerDonor, getDonors, loginDonor } = require('../controllers/donorController');
 
 const router = express.Router();
 
-// School Routes
-router.post('/schools/register', registerSchool);
-router.get('/schools', getSchools);
-
 // Donor Routes
 router.post('/donors/register', registerDonor);
-router.get('/donors', getDonors);
+
+router.post('/donors/login', loginDonor);          
+router.get('/donors', getDonors);                 
+router.get('/donors/:id', getDonors);  
+
 
 module.exports = router;

@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken');
 const Delivery = require('../models/DeliveryModel');
 const { uploadToCloudinary, cloudinary } = require("../utils/cloudinary");
 const sharp = require("sharp");
-
+const hbs=require("hbs");
+const { title } = require("process");
+const sendEmail=require("../utils/email")
 const jwtsecret = process.env.JWT_SECRET;
 
 const generateOTP = () => {
@@ -10,10 +12,10 @@ const generateOTP = () => {
 };
 
 const start_transaction = async (req, res) => {
-    const { donation_id, delivery_person_id } = req.body;
+    const { donation_id, delivery_person_id,reciever_id,reciever_email} = req.body;
 
     try { 
-        if (!donation_id || !delivery_person_id) {
+        if (!donation_id || !delivery_person_id || !reciever_id || !reciever_email) {
             return res.status(400).json({ message: "donation_id and delivery_person_id are required" });
         }
 
@@ -33,6 +35,14 @@ const start_transaction = async (req, res) => {
             otp,
             status: 'In Progress'
         });
+
+        const htmlTemplate=loadTemplate('otpTemplate.hbs',{
+            title:'OTP VERIFICATION',
+            username:newUser.username,
+            otp,
+            message:"YOUR ONE-TIME PASSWORD(OTP) FOR ACCOUNT VERIFICATION IS",
+
+        })
 
         await newTransaction.save();
 
