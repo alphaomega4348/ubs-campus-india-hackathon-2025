@@ -29,7 +29,6 @@ function App() {
     
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
-      {/* <Route path="/donor" element={<SignUp />} /> */}
       <Route path="/school/dashboard" element={<SchoolDashboard/>} />
       <Route path="/maps" element={<MapComponent/>} />
 
