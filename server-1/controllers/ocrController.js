@@ -1,7 +1,7 @@
-import { extractTextFromImage } from '../services/ocrService.js';
-import { extractBookInfoFromText } from '../services/geminiService.js';
+const { extractTextFromImage } =require('../services/ocrService.js');
+const { extractBookInfoFromText } =require( '../services/geminiService.js');
 
-export const processImage = async (req, res) => {
+ const processImage = async (req, res) => {
   try {
     console.log("📥 Incoming Body:", req.body); 
 
@@ -19,5 +19,7 @@ export const processImage = async (req, res) => {
   }
 };
 
+
+module.exports=processImage
 
 
