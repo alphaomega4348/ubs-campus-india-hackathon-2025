@@ -48,25 +48,56 @@ export const processImage = async (req, res) => {
     }
 
     console.log('📚 The book title is:', bookData.title);
-
+      const donor_id='67ee79079536fbabc33bea5c'
     // Save Book to Database
     const newBook = new Book({
-      donor_id,
+      // donor_id,
       title: bookData.title,
-      condition,
-      quantity,
-      grade_level,
-      language,
-      category: bookData.genre || category, // Fallback to user-provided category
+      // condition,
+      // quantity,
+      // grade_level,
+      // language,
+      // category: bookData.genre || category, // Fallback to user-provided category
       image: imageUrl,
+      author:bookData.author
     });
 
     await newBook.save();
 
-    res.json({ success: true, bookData });
+    console.log('new book is',newBook)
+    res.json({ success: true, newBook});
 
   } catch (err) {
     console.error("❌ OCR Controller Error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
+
+export const remainingDetails=async(req,res)=>{
+  const { donor_id, condition, quantity, grade_level, language, category,id } = req.body;
+  try{
+
+    const existingBook = await Book.findById(id);
+
+    if (!existingBook) {
+      return res.status(404).json({ error: "Book not found. Please upload the book image first." });
+    }
+
+    existingBook.donor_id = donor_id || existingBook.donor_id;
+    existingBook.condition = condition || existingBook.condition;
+    existingBook.quantity = quantity || existingBook.quantity;
+    existingBook.grade_level = grade_level || existingBook.grade_level;
+    existingBook.language = language || existingBook.language;
+    existingBook.category = category || existingBook.category;
+
+    await existingBook.save();
+
+    res.json({ success: true, message: "Book details updated successfully", book: existingBook });
+
+  }
+  catch(err){
+    console.error("❌ OCR Controller Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+}

@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const extractBookInfoFromText = async (ocrText) => {
+export const extractBookInfoFromText = async (ocrText) => {
   const prompt = `
 
   You are an intelligent assistant that returns only valid JSON.
