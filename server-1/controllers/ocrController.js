@@ -111,3 +111,24 @@ export const getAllBooks = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch books" });
   }
 };
+
+export const getBooksByDonor = async (req, res) => {
+  try {
+    const { donor_id } = req.params;
+
+    if (!donor_id) {
+      return res.status(400).json({ error: "Donor ID is required" });
+    }
+
+    const books = await Book.find({ donor_id });
+
+    if (books.length === 0) {
+      return res.status(404).json({ message: "No books found for this donor." });
+    }
+
+    res.status(200).json({ success: true, books });
+  } catch (error) {
+    console.error("❌ Error fetching donor's books:", error);
+    res.status(500).json({ error: "Failed to fetch books for the donor" });
+  }
+};

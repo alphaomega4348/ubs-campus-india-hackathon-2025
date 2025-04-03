@@ -4,7 +4,7 @@ const { registerDonor, loginDonor, getDonors } = require('../controllers/donarCo
 const router = express.Router();
 
 router.post('/donors/register', registerDonor);
-router.post('/donors/logn',loginDonor)
-router.get('/donars/get-all',getDonors)
+router.post('/donors/login',loginDonor)
+router.get('/donors/get-all',getDonors)
 
 module.exports = router; // ✅ FIXED!
