@@ -66,12 +66,12 @@ const DonorDashboard = () => {
     location: '',
     image: ''
   });
-  
-  const [isProcessingImage, setIsProcessingImage] = useState(false);
 
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [ocrResult, setOcrResult] = useState(null);
   const [isExtracting, setIsExtracting] = useState(false);
 
+<<<<<<< Updated upstream
   useEffect(() => {
     const fetchDonations = async () => {
       try {
@@ -86,6 +86,8 @@ const DonorDashboard = () => {
     fetchDonations();
   }, []);
 
+=======
+>>>>>>> Stashed changes
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -120,19 +122,6 @@ const DonorDashboard = () => {
     alert('Donation added successfully!');
   };
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-amber-100 text-orange-700';
-      case 'delivered':
-        return 'bg-green-100 text-green-700';
-      case 'in transit':
-        return 'bg-blue-50 text-blue-700';
-      default:
-        return '';
-    }
-  };
-
   const fetchBookDataFromImage = async (file) => {
     setIsExtracting(true);
     setOcrResult(null);
@@ -153,10 +142,11 @@ const DonorDashboard = () => {
       const data = await response.json();
       setOcrResult(data);
 
-      if (data.title) {
+      if (data.newBook) {
         setNewDonation((prev) => ({
           ...prev,
-          title: data.title
+          title: data.newBook.title || prev.title,
+          author: data.newBook.author || prev.author
         }));
       }
     } catch (error) {
@@ -188,32 +178,46 @@ const DonorDashboard = () => {
           Donate Books
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col mb-4">
-            <label
-              htmlFor="title"
-              className="font-semibold text-sm text-gray-700 mb-1"
-            >
-              Book Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              placeholder="Title"
-              value={newDonation.title}
-              onChange={(e) =>
-                setNewDonation({ ...newDonation, title: e.target.value })
-              }
-              required
-              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-            />
+
+          <div className="flex flex-col md:flex-row gap-5 mb-4">
+            <div className="flex flex-col flex-1">
+              <label htmlFor="title" className="font-semibold text-sm text-gray-700 mb-1">
+                Book Title
+              </label>
+              <input
+                type="text"
+                id="title"
+                placeholder="Title"
+                value={newDonation.title}
+                onChange={(e) =>
+                  setNewDonation({ ...newDonation, title: e.target.value })
+                }
+                required
+                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex flex-col flex-1">
+              <label htmlFor="author" className="font-semibold text-sm text-gray-700 mb-1">
+                Author
+              </label>
+              <input
+                type="text"
+                id="author"
+                placeholder="Author"
+                value={newDonation.author}
+                onChange={(e) =>
+                  setNewDonation({ ...newDonation, author: e.target.value })
+                }
+                required
+                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row gap-5 mb-4">
             <div className="flex flex-col flex-1">
-              <label
-                htmlFor="condition"
-                className="font-semibold text-sm text-gray-700 mb-1"
-              >
+              <label htmlFor="condition" className="font-semibold text-sm text-gray-700 mb-1">
                 Condition
               </label>
               <select
@@ -234,10 +238,7 @@ const DonorDashboard = () => {
             </div>
 
             <div className="flex flex-col flex-1">
-              <label
-                htmlFor="quantity"
-                className="font-semibold text-sm text-gray-700 mb-1"
-              >
+              <label htmlFor="quantity" className="font-semibold text-sm text-gray-700 mb-1">
                 Quantity
               </label>
               <input
@@ -259,10 +260,7 @@ const DonorDashboard = () => {
 
           <div className="flex flex-col md:flex-row gap-5 mb-4">
             <div className="flex flex-col flex-1">
-              <label
-                htmlFor="gradeLevel"
-                className="font-semibold text-sm text-gray-700 mb-1"
-              >
+              <label htmlFor="gradeLevel" className="font-semibold text-sm text-gray-700 mb-1">
                 Grade Level
               </label>
               <select
@@ -278,21 +276,16 @@ const DonorDashboard = () => {
                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               >
                 <option value="">Select grade level</option>
-                <option value="None">None</option>
                 <option value="Pre-K">Pre-K</option>
                 <option value="Elementary">Elementary</option>
                 <option value="Middle School">Middle School</option>
                 <option value="High School">High School</option>
                 <option value="College">College</option>
-
               </select>
             </div>
 
             <div className="flex flex-col flex-1">
-              <label
-                htmlFor="category"
-                className="font-semibold text-sm text-gray-700 mb-1"
-              >
+              <label htmlFor="category" className="font-semibold text-sm text-gray-700 mb-1">
                 Category
               </label>
               <select
@@ -315,6 +308,7 @@ const DonorDashboard = () => {
               </select>
             </div>
           </div>
+
           <div className="relative flex items-center py-5">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="flex-shrink mx-4 text-gray-500 font-medium">OR</span>
@@ -417,50 +411,6 @@ const DonorDashboard = () => {
           </button>
         </form>
       </section>
-
-      <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-blue-500 inline-block">
-          My Donations
-        </h2>
-        {Array.isArray(donations) && donations.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Book Title</th>
-                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Quantity</th>
-                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Condition</th>
-                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Grade Level</th>
-                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Category</th>
-                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Date</th>
-                  <th className="p-3 text-left font-semibold text-gray-700 border-b-2 border-gray-200">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {donations.map(donation => (
-                  <tr key={donation.donation_id} className="hover:bg-gray-50">
-                    <td className="p-3 border-b border-gray-200 font-medium text-gray-800">{donation.title}</td>
-                    <td className="p-3 border-b border-gray-200">{donation.quantity}</td>
-                    <td className="p-3 border-b border-gray-200">{donation.condition}</td>
-                    <td className="p-3 border-b border-gray-200">{donation.gradeLevel}</td>
-                    <td className="p-3 border-b border-gray-200">{donation.category}</td>
-                    <td className="p-3 border-b border-gray-200">{donation.date}</td>
-                    <td className="p-3 border-b border-gray-200">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusClass(donation.status)}`}>
-                        {donation.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-center p-8 bg-gray-50 rounded-md text-gray-500">
-            <p>No donations found. Start donating books today!</p>
-          </div>
-        )}
-      </section>
       
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white rounded-lg shadow-md p-5 text-center">
@@ -485,3 +435,4 @@ const DonorDashboard = () => {
 };
 
 export default DonorDashboard;
+
