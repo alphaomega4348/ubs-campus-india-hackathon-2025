@@ -19,7 +19,7 @@ const Home = () => {
               <a href="#contact" className="text-gray-600 hover:text-orange-600">Contact</a>
             </div>
             <div className="flex items-center">
-              <CartIcon />
+              {/* <CartIcon /> */}
               <a href="/signin" className="text-gray-600 hover:text-orange-600 mx-4">Sign In</a>
               <a href="/signup" className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700">Sign Up</a>
             </div>
