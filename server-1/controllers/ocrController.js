@@ -48,7 +48,7 @@ export const processImage = async (req, res) => {
     }
 
     console.log('📚 The book title is:', bookData.title);
-
+      const donor_id='67ee79079536fbabc33bea5c'
     // Save Book to Database
     const newBook = new Book({
       // donor_id,
