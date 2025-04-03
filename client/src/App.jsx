@@ -20,6 +20,7 @@ import About from './pages/About';
 // import BookRequestForm from './components/BookRequestForm';
 // import DeliveryStatus from './components/DeliveryStatus';
 // import ProtectedRoute from './components/ProtectedRoute';
+
 import SchoolDashboard from './pages/SchoolDashboard';
 import AdminSchools from './components/admin/AdminSchool';
 import ContactUs from './pages/ContactUs';
@@ -35,6 +36,7 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       {/* <Route path="/donor" element={<SignUp />} /> */}
       <Route path="/school/dashboard" element={<SchoolDashboard/>} />
+      <Route path="/maps" element={<MapComponent/>} />
 
       {/* Protected Routes */}
       {/* <Route path="/donor/dashboard" element={<ProtectedRoute role="donor" component={DonorDashboard} />} /> */}
