@@ -4,6 +4,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import DonorDashboard from './pages/DonorDashboard';
 import Home from './pages/Home';
+import About from './pages/About';
 // import SchoolDashboard from './pages/SchoolDashboard';
 // import AdminDashboard from './pages/AdminDashboard';
 // import DeliveryPersonDashboard from './pages/DeliveryPersonDashboard';
@@ -21,12 +22,14 @@ import Home from './pages/Home';
 // import ProtectedRoute from './components/ProtectedRoute';
 import SchoolDashboard from './pages/SchoolDashboard';
 import AdminSchools from './components/admin/AdminSchool';
+import ContactUs from './pages/ContactUs';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      
+      <Route path="/about" element={<About/>} />
+      <Route path="/contact" element={<ContactUs />} />
     
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
