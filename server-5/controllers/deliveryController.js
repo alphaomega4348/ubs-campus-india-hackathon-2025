@@ -1,28 +1,40 @@
-const jwt = require('jsonwebtoken');
-const Delivery = require('../models/DeliveryModel');
-const { uploadToCloudinary, cloudinary } = require("../utils/cloudinary");
+const jwt = require("jsonwebtoken");
+const Delivery = require("../models/DeliveryModel");
+const { uploadToCloudinary } = require("../utils/cloudinary");
 const sharp = require("sharp");
-const hbs=require("hbs");
-const { title } = require("process");
-const sendEmail=require("../utils/email")
+const path = require("path");
+const fs = require("fs");
+const hbs = require("hbs");
+const sendEmail = require("../utils/email");
+
 const jwtsecret = process.env.JWT_SECRET;
 
-const generateOTP = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+const loadTemplate = (templateName, replacements) => {
+    const templatePath = path.join(__dirname, "../emailTemplate", templateName);
+
+    if (!fs.existsSync(templatePath)) {
+        throw new Error("Email template not found");
+    }
+
+    const source = fs.readFileSync(templatePath, "utf-8");
+    const template = hbs.compile(source);
+    return template(replacements);
 };
 
 const start_transaction = async (req, res) => {
-    const { donation_id, delivery_person_id,reciever_id,reciever_email} = req.body;
+    const { donation_id, delivery_person_id, reciever_id, reciever_email, reciever_name } = req.body;
 
-    try { 
+    try {
         if (!donation_id || !delivery_person_id || !reciever_id || !reciever_email) {
-            return res.status(400).json({ message: "donation_id and delivery_person_id are required" });
+            return res.status(400).json({ message: "Missing required fields" });
         }
 
         const existingTransaction = await Delivery.findOne({ donation_id });
 
         if (existingTransaction) {
-            return res.status(400).json({ message: "A delivery transaction for this book already exists" });
+            return res.status(400).json({ message: "A delivery transaction already exists" });
         }
 
         const tracking_id = jwt.sign({ donation_id, delivery_person_id, timestamp: Date.now() }, jwtsecret, { noTimestamp: true });
@@ -33,23 +45,31 @@ const start_transaction = async (req, res) => {
             delivery_person_id,
             tracking_id,
             otp,
-            status: 'In Progress'
+            status: "In Progress",
+            reciever_id,
         });
 
-        const htmlTemplate=loadTemplate('otpTemplate.hbs',{
-            title:'OTP VERIFICATION',
-            username:newUser.username,
+        const htmlTemplate = loadTemplate("otpTemplate.hbs", {
+            title: "OTP VERIFICATION",
+            username: reciever_name,
             otp,
-            message:"YOUR ONE-TIME PASSWORD(OTP) FOR ACCOUNT VERIFICATION IS",
+            message: "Share this after receiving the book",
+        });
 
-        })
+        console.log("📤 Preparing to send email to:", reciever_email);
+
+        await sendEmail({
+            email: reciever_email.trim(),
+            subject: "Your OTP for Delivery Confirmation",
+            html: htmlTemplate,
+        });
 
         await newTransaction.save();
 
         return res.status(201).json({ message: "Delivery transaction started successfully", transaction: newTransaction });
 
     } catch (error) {
-        console.error("Error in start_transaction:", error);
+        console.error("❌ Error in start_transaction:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -58,9 +78,8 @@ const complete_transaction = async (req, res) => {
     try {
         const { otp, Id } = req.body;
 
-        
         if (!otp || !Id) {
-            return res.status(400).json({ message: "Missing required fields (OTP & Id)" });
+            return res.status(400).json({ message: "Missing required fields" });
         }
 
         const transaction = await Delivery.findById(Id);
@@ -84,10 +103,8 @@ const complete_transaction = async (req, res) => {
 
         const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString("base64")}`;
 
-        // Upload to Cloudinary
         const cloudResponse = await uploadToCloudinary(fileUri);
 
-        // Update transaction status
         transaction.status = "Delivered";
         transaction.image = cloudResponse.secure_url;
         await transaction.save();
@@ -95,14 +112,14 @@ const complete_transaction = async (req, res) => {
         return res.status(200).json({ message: "Delivery marked as Delivered", transaction });
 
     } catch (error) {
-        console.error("Error in complete_transaction:", error);
+        console.error("❌ Error in complete_transaction:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
 
 const get_all_transactions = async (req, res) => {
     try {
-        const transactions = await Delivery.find(); // Fetch all transactions
+        const transactions = await Delivery.find();
 
         if (transactions.length === 0) {
             return res.status(404).json({ message: "No transactions found" });
@@ -111,7 +128,7 @@ const get_all_transactions = async (req, res) => {
         return res.status(200).json({ transactions });
 
     } catch (error) {
-        console.error("Error in get_all_transactions:", error);
+        console.error("❌ Error in get_all_transactions:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -133,7 +150,7 @@ const get_transactions_by_delivery_person = async (req, res) => {
         return res.status(200).json({ transactions });
 
     } catch (error) {
-        console.error("Error in get_transactions_by_delivery_person:", error);
+        console.error("❌ Error in get_transactions_by_delivery_person:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -143,7 +160,7 @@ const get_transactions_by_donor = async (req, res) => {
         const { donation_id } = req.params;
 
         if (!donation_id) {
-            return res.status(400).json({ message: "donor_id is required" });
+            return res.status(400).json({ message: "donation_id is required" });
         }
 
         const transactions = await Delivery.find({ donation_id });
@@ -155,10 +172,9 @@ const get_transactions_by_donor = async (req, res) => {
         return res.status(200).json({ transactions });
 
     } catch (error) {
-        console.error("Error in get_transactions_by_donor:", error);
+        console.error("❌ Error in get_transactions_by_donor:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
 
-module.exports = { start_transaction, complete_transaction, get_all_transactions,get_transactions_by_delivery_person ,
-    get_transactions_by_donor};
+module.exports = { start_transaction, complete_transaction, get_all_transactions, get_transactions_by_delivery_person, get_transactions_by_donor };
