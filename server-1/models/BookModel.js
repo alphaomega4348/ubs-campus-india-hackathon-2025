@@ -4,41 +4,38 @@ const bookSchema = new mongoose.Schema({
     donor_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Donor',
-        required: true
     },
     title: {
         type: String,
         required: true,
         trim: true
     },
+    author:{
+        type: String,
+        trim:true
+    },
     condition: {
         type: String,
         enum: ['New', 'Used'],
-        required: true
     },
     quantity: {
         type: Number,
-        required: true,
         min: 1
     },
     grade_level: {
         type: String,
-        required: true,
         trim: true
     },
     language: {
         type: String,
-        required: true,
         trim: true
     },
     category: {
         type: String,
-        required: true,
         trim: true
     },
     image: {
         type: String, 
-        required: false,
         trim: true
     }
 }, { timestamps: true });
