@@ -45,13 +45,13 @@ function App() {
       {/* <Route path="/donate-book" element={<ProtectedRoute role="donor" component={BookDonationForm} />} />
       <Route path="/request-book" element={<ProtectedRoute role="school" component={BookRequestForm} />} /> */}
      
-      <Route path="/donate-book" element={<ProtectedRoute role="donor" component={BookDonationForm} />} />
-      <Route path="/request-book" element={<ProtectedRoute role="school" component={BookRequestForm} />} />
+      {/* <Route path="/donate-book" element={<ProtectedRoute role="donor" component={BookDonationForm} />} />
+      <Route path="/request-book" element={<ProtectedRoute role="school" component={BookRequestForm} />} /> */}
 
       {/* Delivery Status Tracking */}
       {/* <Route path="/delivery/status/:trackingId" element={<DeliveryStatus />} /> */}
       
-      <Route path="/delivery/status/:trackingId" element={<DeliveryStatus />} /> */}
+      {/* <Route path="/delivery/status/:trackingId" element={<DeliveryStatus />} /> */}
     </Routes>
   );
 }
