@@ -8,7 +8,7 @@ const center = { lat: 18.563546, lng: 73.884707 }; // UBS Pune Office
 
 const MapComponent = () => {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: ["places"],
   });
 
