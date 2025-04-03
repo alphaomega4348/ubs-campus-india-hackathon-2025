@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -12,6 +12,10 @@ function SignUp() {
     role: '',
     address: '',
     phoneNumber: '',
+    // School-specific fields
+    area: '',
+    totalStudents: '',
+    totalBooks: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -38,21 +42,42 @@ function SignUp() {
     try {
       setLoading(true);
       
-      // Prepare data for API call
+      // Prepare common data for API call
       const userData = {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        confirmPassword: formData.confirmPassword,
-        role: formData.role,
+        confirmPassword:formData.confirmPassword,
         address: formData.address,
         phone: formData.phoneNumber,
-        donorType: 'individual',
       };
       
-      // Make API call to register endpoint
-      console.log('Sending registration data:', userData);
-      const response = await fetch('http://localhost:5001/api/donar/donors/register', {
+      let apiEndpoint;
+      
+      // Determine API endpoint and data based on role
+      if (formData.role === 'donor') {
+        // Add donor-specific fields
+        userData.donorType = 'individual';
+        apiEndpoint = 'http://localhost:5001/api/donar/donors/register';
+      } else if (formData.role === 'school') {
+        // Add school-specific fields
+        userData.area = formData.area;
+        userData.totalStudents = formData.totalStudents;
+        userData.password=formData.password
+        userData.confirmPassword=formData.confirmPassword
+        apiEndpoint = 'http://localhost:5001/api/school/schools/register';
+      } else if (formData.role === 'logistics') {
+        apiEndpoint = 'http://localhost:5001/api/logistics/register';
+      } else {
+        setError('Please select a valid role');
+        setLoading(false);
+        return;
+      }
+      
+      console.log(`Sending ${formData.role} registration data to ${apiEndpoint}:`, userData);
+      
+      // Make API call to the appropriate registration endpoint
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,13 +85,13 @@ function SignUp() {
         body: JSON.stringify(userData),
       });
 
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
-
       const responseData = await response.json();
       
-      console.log('Registration successful:', response.data);
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Registration failed');
+      }
+      
+      console.log('Registration successful:', responseData);
       
       // Redirect to sign in page after successful registration
       alert('Registration successful! Please sign in.');
@@ -79,11 +104,62 @@ function SignUp() {
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
       } else {
-        setError('An error occurred during registration. Please try again.');
+        setError(err.message || 'An error occurred during registration. Please try again.');
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  // Render school-specific fields when role is 'school'
+  const renderRoleSpecificFields = () => {
+    if (formData.role === 'school') {
+      return (
+        <div className="space-y-4 mt-4">
+          <div>
+            <label className="block text-gray-600">School Area</label>
+            <select
+              name="area"
+              value={formData.area}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
+              style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+            >
+              <option value="">Select Area Type</option>
+              <option value="Urban">Urban</option>
+              <option value="Rural">Rural</option>
+              <option value="Metropolitan">Metropolitan</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-600">Total Students</label>
+            <input
+              type="number"
+              name="totalStudents"
+              value={formData.totalStudents}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
+              style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-600">Total Books</label>
+            <input
+              type="number"
+              name="totalBooks"
+              value={formData.totalBooks}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-orange-300"
+              style={{ borderColor: "#ddd", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+            />
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -95,7 +171,7 @@ function SignUp() {
     }}>
       <div className="w-full max-w-4xl p-8 space-y-6 bg-white shadow-lg rounded-lg my-8 mx-4">
         <h2 className="text-2xl font-bold text-center" style={{ color: "#ff7f00" }}>
-          Sign Up
+          Sign Up as {formData.role ? formData.role.charAt(0).toUpperCase() + formData.role.slice(1) : ''}
         </h2>
         
         {error && (
@@ -202,6 +278,9 @@ function SignUp() {
               </div>
             </div>
           </div>
+          
+          {/* Render role-specific fields */}
+          {renderRoleSpecificFields()}
 
           <div className="pt-4">
             <button

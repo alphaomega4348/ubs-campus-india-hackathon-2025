@@ -41,6 +41,7 @@ mongoose
 
 app.use("/api/donar", donarRoute); // ✅ Ensure This Matches Postman Request
 app.use('/api/school',schoolRoute)
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('❌ Server Error:', err);
