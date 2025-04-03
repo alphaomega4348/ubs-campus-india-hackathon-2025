@@ -268,11 +268,13 @@ const DonorDashboard = () => {
                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               >
                 <option value="">Select grade level</option>
+                <option value="None">None</option>
                 <option value="Pre-K">Pre-K</option>
                 <option value="Elementary">Elementary</option>
                 <option value="Middle School">Middle School</option>
                 <option value="High School">High School</option>
                 <option value="College">College</option>
+
               </select>
             </div>
 
