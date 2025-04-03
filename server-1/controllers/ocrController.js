@@ -1,12 +1,27 @@
-const { extractTextFromImage } =require('../services/ocrService.js');
-const { extractBookInfoFromText } =require( '../services/geminiService.js');
+import { extractTextFromImage } from '../services/ocrService.js';
+import { extractBookInfoFromText } from '../services/geminiService.js';
 
- const processImage = async (req, res) => {
+import { uploadToCloudinary, cloudinary } from "../utils/cloudinary.js";
+import sharp from "sharp";
+
+export  const processImage = async (req, res) => {
   try {
     console.log("📥 Incoming Body:", req.body); 
 
-    const { imageUrl } = req.body;
-    if (!imageUrl) return res.status(400).json({ error: 'Image URL required' });
+    if (!req.file) {
+      return res.status(400).json({ message: "Proof of delivery is required" });
+    }
+
+    const optimizedImageBuffer = await sharp(req.file.buffer)
+    .resize({ width: 800, height: 800, fit: "inside" })
+    .toFormat("jpeg", { quality: 80 })
+    .toBuffer();
+
+const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString("base64")}`;
+
+const cloudResponse = await uploadToCloudinary(fileUri);
+
+    const imageUrl=cloudResponse.secure_url;
 
     const text = await extractTextFromImage(imageUrl);
     const bookData = await extractBookInfoFromText(text);
@@ -20,6 +35,5 @@ const { extractBookInfoFromText } =require( '../services/geminiService.js');
 };
 
 
-module.exports=processImage
 
 

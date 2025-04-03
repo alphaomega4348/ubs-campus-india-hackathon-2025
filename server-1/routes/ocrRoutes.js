@@ -1,7 +1,8 @@
-const express=require('express');
-const { processImage } =require( '../controllers/ocrController.js');
+import express from 'express';
+import { processImage } from '../controllers/ocrController.js';
+import upload from '../../server-5/middleware/multer.js';
 const router = express.Router();
 
-router.post('/process', processImage);
+router.post('/process',upload.single("image"),processImage);
 
-module.exports= router;
+export default router;
