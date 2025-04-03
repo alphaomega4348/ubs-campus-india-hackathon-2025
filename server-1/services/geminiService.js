@@ -2,11 +2,11 @@ import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export const extractBookInfoFromText = async (ocrText) => {
+export const extractBookInfoFromText= async (ocrText) => {
   const prompt = `
 
   You are an intelligent assistant that returns only valid JSON.
-     
+     extractBookInfoFromText
   The following text was extracted from a book cover. Extract structured data with the following keys:
   - "title"
   - "author"
