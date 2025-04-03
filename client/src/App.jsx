@@ -18,8 +18,8 @@ import DonorDashboard from './pages/DonorDashboard';
 // import BookRequestForm from './components/BookRequestForm';
 // import DeliveryStatus from './components/DeliveryStatus';
 // import ProtectedRoute from './components/ProtectedRoute';
-// import SchoolDashboard from './pages/SchoolDashboard';
-// import AdminSchools from './components/admin/AdminSchool';
+import SchoolDashboard from './pages/SchoolDashboard';
+import AdminSchools from './components/admin/AdminSchool';
 
 function App() {
   return (
@@ -49,7 +49,7 @@ function App() {
       {/* <Route path="/donate-book" element={<ProtectedRoute role="donor" component={BookDonationForm} />} />
       <Route path="/request-book" element={<ProtectedRoute role="school" component={BookRequestForm} />} /> */}
 
-          {/* <Route path="/admin/schools" element={<AdminSchools />} /> */}
+          <Route path="/admin/schools" element={<AdminSchools />} />
       {/* Delivery Status Tracking */}
       {/* <Route path="/delivery/status/:trackingId" element={<DeliveryStatus />} /> */}
       
