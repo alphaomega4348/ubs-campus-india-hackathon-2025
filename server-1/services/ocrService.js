@@ -1,5 +1,5 @@
-import { createWorker } from 'tesseract.js';
-export const extractTextFromImage = async (imageUrl) => {
+const { createWorker } =require( 'tesseract.js');
+ const extractTextFromImage = async (imageUrl) => {
   try {
     console.log("📷 Image URL:", imageUrl);
     const worker = await createWorker('eng');
@@ -11,3 +11,5 @@ export const extractTextFromImage = async (imageUrl) => {
     throw new Error("OCR failed");
   }
 };
+
+module.exports=extractTextFromImage

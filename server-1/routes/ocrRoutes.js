@@ -1,7 +1,7 @@
-import express from 'express';
-import { processImage } from '../controllers/ocrController.js';
+const express=require('express');
+const { processImage } =require( '../controllers/ocrController.js');
 const router = express.Router();
 
 router.post('/process', processImage);
 
-export default router;
+module.exports= router;
