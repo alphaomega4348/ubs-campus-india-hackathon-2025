@@ -6,7 +6,7 @@ function AuthPage({ isSignUp }) {
     email: "",
     password: "",
     role: "",
-    location: "", // Location field added
+    location: "",
     ...(isSignUp && { name: "" }),
   });
   const [error, setError] = useState("");
@@ -41,9 +41,8 @@ function AuthPage({ isSignUp }) {
       apiUrl = "http://localhost:5001/api/donar/donors/login";
     } else if (formData.role === "school") {
       apiUrl = "http://localhost:5001/api/school/schools/login";
-    }
-    else if(formData.role === "logistics"){
-      apiUrl = "http://localhost:5002/api/patner/login"
+    } else if (formData.role === "logistics") {
+      apiUrl = "http://localhost:5002/api/patner/login";
     }
 
     if (!isSignUp) {
@@ -53,6 +52,7 @@ function AuthPage({ isSignUp }) {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include", // ✅ Include cookies (important for donor JWT)
           body: JSON.stringify({
             email: formData.email,
             password: formData.password,
@@ -62,10 +62,16 @@ function AuthPage({ isSignUp }) {
         const data = await response.json();
 
         if (response.ok) {
-          localStorage.setItem(`${formData.role}Token`, data.token);
+          localStorage.setItem(`${formData.role}Token`, data.token || "");
           console.log("Login successful:", data);
 
-          navigate(formData.role === "donor" ? "/donor/dashboard" : "/school/dashboard");
+          navigate(
+            formData.role === "donor"
+              ? "/donor/dashboard"
+              : formData.role === "school"
+              ? "/school/dashboard"
+              : "/logistics/dashboard"
+          );
         } else {
           setError(data.message || "Login failed. Please check your credentials.");
         }

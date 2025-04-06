@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const DonorDashboard = () => {
   const [donations, setDonations] = useState([]);
   const [donorName, setDonorName] = useState('');
+
   const [newDonation, setNewDonation] = useState({
     title: '',
     author: '',
@@ -19,13 +20,27 @@ const DonorDashboard = () => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [formError, setFormError] = useState('');
 
+  useEffect(() => {
+    fetch("http://localhost:5001/api/donar/me", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => setDonorName(data.name))
+      .catch((err) => {
+        console.error("❌ Could not fetch donor:", err);
+        setDonorName('');
+      });
+  }, []);
+
   const generateCertificate = async ({ donorName, bookTitle, quantity, date }) => {
     try {
       const response = await fetch('http://localhost:8002/api/certificate/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ donorName, bookTitle, quantity, date })
       });
 
@@ -50,8 +65,8 @@ const DonorDashboard = () => {
     e.preventDefault();
     setFormError('');
 
-    if (!donorName.trim()) {
-      setFormError('Donor name is required.');
+    if (!donorName) {
+      setFormError('Donor not found. Please login again.');
       return;
     }
 
@@ -72,7 +87,6 @@ const DonorDashboard = () => {
 
     setDonations([...donations, donationToAdd]);
 
-    // Generate certificate
     generateCertificate({
       donorName,
       bookTitle: newDonation.title,
@@ -80,7 +94,6 @@ const DonorDashboard = () => {
       date: today
     });
 
-    // Reset form
     setNewDonation({
       title: '',
       author: '',
@@ -95,7 +108,6 @@ const DonorDashboard = () => {
 
     setOcrResult(null);
     setFormError('');
-    setDonorName('');
     alert('Donation added successfully!');
   };
 
@@ -144,7 +156,9 @@ const DonorDashboard = () => {
     <div className="max-w-7xl mx-auto p-5 font-sans text-gray-800">
       <header className="text-center mb-8 pb-5">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Donor Dashboard</h1>
-        <p className="text-lg text-gray-500">Thank you for your generosity! Your donations make a difference.</p>
+        <p className="text-lg text-gray-500">
+          Thank you, <span className="font-semibold text-blue-600">{donorName || "Donor"}</span>! Your donations make a difference.
+        </p>
       </header>
 
       <section className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -152,22 +166,6 @@ const DonorDashboard = () => {
           Donate Books
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
-          {/* Donor Name */}
-          <div className="flex flex-col">
-            <label htmlFor="donorName" className="font-semibold text-sm text-gray-700 mb-1">Donor Name</label>
-            <input
-              type="text"
-              id="donorName"
-              placeholder="Your full name"
-              value={donorName}
-              onChange={(e) => setDonorName(e.target.value)}
-              required
-              className="p-3 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          {/* Title and Author */}
           <div className="flex flex-col md:flex-row gap-5 mb-4">
             <div className="flex flex-col flex-1">
               <label htmlFor="title" className="font-semibold text-sm text-gray-700 mb-1">Book Title</label>
@@ -193,7 +191,6 @@ const DonorDashboard = () => {
             </div>
           </div>
 
-          {/* Condition and Quantity */}
           <div className="flex flex-col md:flex-row gap-5 mb-4">
             <div className="flex flex-col flex-1">
               <label htmlFor="condition" className="font-semibold text-sm text-gray-700 mb-1">Condition</label>
@@ -225,7 +222,6 @@ const DonorDashboard = () => {
             </div>
           </div>
 
-          {/* Grade Level and Auto-detected Category */}
           <div className="flex flex-col md:flex-row gap-5 mb-4">
             <div className="flex flex-col flex-1">
               <label htmlFor="gradeLevel" className="font-semibold text-sm text-gray-700 mb-1">Grade Level</label>
@@ -237,7 +233,6 @@ const DonorDashboard = () => {
                 className="p-3 border border-gray-300 rounded-md"
               >
                 <option value="">Select grade level</option>
-                <option value="none">None</option>
                 <option value="Pre-K">Pre-K</option>
                 <option value="Elementary">Elementary</option>
                 <option value="Middle School">Middle School</option>
@@ -245,7 +240,6 @@ const DonorDashboard = () => {
                 <option value="College">College</option>
               </select>
             </div>
-
             <div className="flex flex-col flex-1">
               <label className="font-semibold text-sm text-gray-700 mb-1">Category (auto-detected)</label>
               <input
@@ -258,7 +252,6 @@ const DonorDashboard = () => {
             </div>
           </div>
 
-          {/* Image Upload */}
           <div className="mt-2 mb-6">
             <label className="font-semibold text-sm text-gray-700 mb-2 block">Upload Book Cover Image</label>
             <div
@@ -294,7 +287,6 @@ const DonorDashboard = () => {
             />
           </div>
 
-          
           {ocrResult && (
             <div className="mt-4 bg-gray-100 p-4 rounded-md text-sm text-gray-800 whitespace-pre-wrap">
               <h3 className="text-md font-semibold mb-2">OCR Result:</h3>

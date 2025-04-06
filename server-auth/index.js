@@ -16,13 +16,15 @@ config({
 
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(
   cors({
-    origin: ["*"],
-    methods: ["*"],
-    credentials: true,
+    origin: "http://localhost:5173", // 👈 your Vite or React dev server
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true, // 👈 allows cookies and headers
   })
 );
+
 
 // Request logger middleware
 app.use((req, res, next) => {
