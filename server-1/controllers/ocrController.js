@@ -57,7 +57,7 @@ export const processImage = async (req, res) => {
       // quantity,
       // grade_level,
       // language,
-      // category: bookData.genre || category, // Fallback to user-provided category
+      category: bookData.genre || category, // Fallback to user-provided category
       image: imageUrl,
       author:bookData.author
     });

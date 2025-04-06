@@ -9,12 +9,12 @@ router.post('/generate', async (req, res) => {
     donorName,
     bookTitle,
     quantity,
-    date,
-    schoolName,
-    schoolAddress
+    date
+    // schoolName,
+    // schoolAddress
   } = req.body;
 
-  if (!donorName || !bookTitle || !quantity || !date || !schoolName || !schoolAddress) {
+  if (!donorName || !bookTitle || !quantity || !date ) {
     return res.status(400).json({ error: 'Missing certificate details' });
   }
 
@@ -62,18 +62,18 @@ router.post('/generate', async (req, res) => {
       .text(`For donating "${bookTitle}" (${quantity} copies)`, { align: 'center' })
       .moveDown(1);
 
-    doc
-      .fontSize(14)
-      .text(`Recipient School:`, { align: 'center' });
+    // doc
+    //   .fontSize(14)
+    //   .text(`Recipient School:`, { align: 'center' });
 
-    doc
-      .fontSize(14)
-      .text(`${schoolName}`, { align: 'center' });
+    // doc
+    //   .fontSize(14)
+    //   .text(`${schoolName}`, { align: 'center' });
 
-    doc
-      .fontSize(12)
-      .text(`${schoolAddress}`, { align: 'center' })
-      .moveDown(2);
+    // doc
+    //   .fontSize(12)
+    //   .text(`${schoolAddress}`, { align: 'center' })
+    //   .moveDown(2);
 
     doc
       .fontSize(12)
@@ -87,7 +87,7 @@ router.post('/generate', async (req, res) => {
     doc
       .fontSize(16)
       .fillColor('#003366')
-      .text('Team BookBridge', { align: 'left' });
+      .text('Team Books4All', { align: 'left' });
 
     // ---------------------------
     doc.end();

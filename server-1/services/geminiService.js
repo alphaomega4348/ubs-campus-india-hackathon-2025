@@ -10,6 +10,8 @@ export const extractBookInfoFromText= async (ocrText) => {
   The following text was extracted from a book cover. Extract structured data with the following keys:
   - "title"
   - "author"
+  - "genre"
+  The genre should be calculated based on your  knowledge about the books and how it was.
   
   
     Respond with only valid JSON. Do not include the word 'json', triple backticks, or any extra formatting.

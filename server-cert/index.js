@@ -3,7 +3,7 @@ import cors from 'cors';
 import certificateRoutes from './routes/certificateRoutes.js';
 
 const app = express();
-const PORT = 8000;
+const PORT = 8002;
 
 app.use(cors());
 app.use(express.json());

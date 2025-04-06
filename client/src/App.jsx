@@ -25,6 +25,9 @@ import SchoolDashboard from './pages/SchoolDashboard';
 import AdminSchools from './components/admin/AdminSchool';
 import ContactUs from './pages/ContactUs';
 import MapComponent from './pages/MapComponent';
+import DeliverySimulation from './components/DeliverySimulation';
+import BookAllocationTSP from './components/BookAllocationTSP';
+import RealTimeDeliveryWithGPS from './components/RealTImeDeliveryWithGps';
 
 function App() {
   return (
@@ -56,6 +59,9 @@ function App() {
       <Route path="/request-book" element={<ProtectedRoute role="school" component={BookRequestForm} />} /> */}
 
           <Route path="/admin/schools" element={<AdminSchools />} />
+          <Route path="/realtime" element={<RealTimeDeliveryWithGPS/>}/>
+          <Route path="/tsp" element={<BookAllocationTSP/>}/>
+
       {/* Delivery Status Tracking */}
       {/* <Route path="/delivery/status/:trackingId" element={<DeliveryStatus />} /> */}
       
